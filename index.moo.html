@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<title>MotionText</title>
+<style>
+body{
+	text-align: center;
+}
+body, input, button{
+	font-size: 40px;
+	font-family: sans-serif;
+}
+#text{
+	margin: 0 0 1em;
+	font-family: monospace;
+}
+</style>
+<script src="http://ajax.googleapis.com/ajax/libs/mootools/1.2.4/mootools-yui-compressed.js"></script>
+<script src="motiontext.moo.js"></script>
+<script>
+window.addEvent('domready', function(){
+	var tt = new MotionText($('text'));
+	var newText = $('newText');
+	$('change').addEvent('click', function(){
+		tt.start(newText.get('value'));
+	});
+});
+</script>
+<h1>MotionText</h1>
+<div id="text">I am awesome</div>
+<input type="text" value="" id="newText">
+<button id="change">Change</button>
