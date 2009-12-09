@@ -1,4 +1,14 @@
-var MotionText = new Class({
+(function(){
+
+var padStyles = function(str){
+	return str + '-moz-' + str + '-webkit-' + str;
+};
+var flipStyles = [
+	padStyles('transform: matrix(1, 0, 0, -1, 0, 0);'),
+	padStyles('transform: matrix(-1, 0, 0, -, 0, 0);')
+];
+
+this.MotionText = new Class({
 
 	Implements: [Events, Options],
 	
@@ -34,19 +44,18 @@ var MotionText = new Class({
 		var nText = newText.split('');
 		
 		var len = Math.max(text.length, nText.length);
-		var jlen = this.options.randomLength-1;
+		var jlen = Math.min(this.options.randomLength, Math.min(text.length, nText.length))-1;
 		var randomChars = this.randomChars;
 		
 		var texts = [];
 		for (var i=0; i<len; i++){
 			for (var j=0; j<=jlen; j++){
-				text[i] = randomChars.getRandom();
-				if (j == jlen){
-					for (var k=1; k<jlen; k++){
-						if (text[i-k]) text[i-k] = randomChars.getRandom();
-					}
-					if (text[i-jlen]) text[i-jlen] = nText[i-2] || '';
+				for (var k=0; k<=jlen; k++){
+					var c = randomChars.getRandom();
+					var styledC = '<span style="' + flipStyles.getRandom() + '">' + c + '</span>';
+					text[i-k] = [c, styledC].getRandom();
 				}
+				if (j == jlen && text[i-jlen]) text[i-jlen] = nText[i-jlen] || '';
 				texts.push(text.join(''));
 			}
 		}
@@ -74,3 +83,5 @@ var MotionText = new Class({
 	}
 	
 });
+
+})();
