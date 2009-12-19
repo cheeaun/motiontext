@@ -5,7 +5,8 @@ var padStyles = function(str){
 };
 var flipStyles = [
 	padStyles('transform: matrix(1, 0, 0, -1, 0, 0);'),
-	padStyles('transform: matrix(-1, 0, 0, -, 0, 0);')
+	padStyles('transform: matrix(-1, 0, 0, -, 0, 0);'),
+	padStyles('transform: rotate(180deg);')
 ];
 
 this.MotionText = new Class({
@@ -18,7 +19,8 @@ this.MotionText = new Class({
 		onComplete: $empty,
 		*/
 		duration: 2000,
-		randomChars: '`1234567890-=~!@#$%^&*()_+',
+		perCharDuration: null,
+		randomChars: '`1234567890-=~!@#$%^&amp;*()_+',
 		randomLength: 3,
 		allowSameText: false
 	},
@@ -37,14 +39,13 @@ this.MotionText = new Class({
 	
 	start: function(newText){
 		newText = newText.trim();
-		if (!newText) return;
 		var elText = this.el.get('text').trim();
 		if (!this.options.allowSameText && newText == elText) return;
 		text = elText.split('');
 		var nText = newText.split('');
 		
 		var len = Math.max(text.length, nText.length);
-		var jlen = Math.min(this.options.randomLength, Math.min(text.length, nText.length))-1;
+		var jlen = Math.max(Math.min(this.options.randomLength, Math.min(text.length, nText.length))-1, 0);
 		var randomChars = this.randomChars;
 		
 		var texts = [];
@@ -69,19 +70,43 @@ this.MotionText = new Class({
 		var animate = function(){
 			if (k == textsLen){
 				$clear(timer);
-				self.fireEvent('complete');
+				self.fireEvent('complete', self);
 				return;
 			}
 			el.set('html', texts[k]);
 			k++;
 		};
 		
-		timer = animate.periodical(Math.max(this.options.duration/textsLen, 20));
+		timer = animate.periodical(this.options.perCharDuration || Math.max(this.options.duration/textsLen, 20));
 		
-		this.fireEvent('start');
+		this.fireEvent('start', this);
 		return this;
 	}
 	
+});
+
+Element.Properties.motiontext = {
+
+	set: function(options){
+		return this.eliminate('motiontext').store('motiontext:options', options);
+	},
+
+	get: function(options){
+		if (options || !this.retrieve('motiontext')){
+			if (options || !this.retrieve('motiontext:options')) this.set('motiontext', options);
+			this.store('motiontext', new MotionText(this, this.retrieve('motiontext:options')));
+		}
+		return this.retrieve('motiontext');
+	}
+
+};
+
+Element.implement({
+
+	motionText: function(newText, options){
+		return this.get('motiontext', options).start(newText);
+	}
+
 });
 
 })();

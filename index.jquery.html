@@ -13,14 +13,14 @@ body, input, button{
 	font-family: monospace;
 }
 </style>
-<script src="http://ajax.googleapis.com/ajax/libs/mootools/1.2.4/mootools-yui-compressed.js"></script>
-<script src="motiontext.moo.js"></script>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js"></script>
+<script src="motiontext.jquery.js"></script>
 <script>
-window.addEvent('domready', function(){
-	var text = $('text');
-	var newText = $('newText');
-	$('change').addEvent('click', function(){
-		var val = newText.get('value');
+$(function(){
+	var text = $('#text');
+	var newText = $('#newText');
+	$('#change').click(function(){
+		var val = newText.val();
 		text.motionText(val);
 	});
 });
